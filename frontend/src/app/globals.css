@@ -28,9 +28,9 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* Global: no rounded corners */
+/* Global: subtle rounded corners */
 *, *::before, *::after {
-  border-radius: 0 !important;
+  border-radius: 4px !important;
 }
 
 ::selection {
