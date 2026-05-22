@@ -14,7 +14,7 @@ Dockerfile uses `npm ci` — that's a deploy concern, not for local dev.
 
 ## Project structure
 
-Two projects share this repo — **Cusygen** (existing app, Locus on Base) and **AgentPay SEA** (in-progress migration to x402+Morph, in `CONTEXT.md`).
+This is **AgentPay SEA** — x402 payment layer for AI agents on Morph Network.
 
 ```
 frontend/               ← the Next.js 16 app
@@ -91,4 +91,4 @@ Payment flow (post-migration):
 - `bun.lock` and `package-lock.json` both exist in frontend; ignore both — use `pnpm-lock.yaml`
 - `push.sh` at repo root is for per-file git commits, not part of the app
 - No `typecheck` npm script — run `npx tsc --noEmit` when needed
-- `@withlocus/checkout-react` still in deps — will be removed when Locus UI components are replaced
+(no Locus dependencies remain)

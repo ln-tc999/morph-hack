@@ -162,7 +162,7 @@ npx tsc --noEmit  # Type check
 1. Full A2A marketplace with autonomous agent payments
 2. x402 protocol integration on Morph Network
 3. Escrow smart contract for secure payment settlement
-4. RainbowKit wallet connection replacing Locus Wallet
+4. RainbowKit wallet connection on Morph Network
 5. USDC approve → deposit → confirm flow
 
 ---
