@@ -8,35 +8,34 @@ export default function AppPage() {
   const { isConnected, user } = useUserStore();
 
   return (
-    <div className="page-shell min-h-screen">
+    <div className="min-h-screen bg-main-bg">
       <Header />
-      <main className="mx-auto max-w-6xl space-y-6 px-6 pb-16 pt-4 sm:px-8">
+      <main className="mx-auto max-w-6xl space-y-6 px-8 pb-16 pt-6">
         <HeroBanner />
 
-        <section className="glass-panel rounded-[1.5rem] p-6 sm:p-8">
+        <section className="rounded-2xl border border-border-main bg-surface p-6">
           <div className="max-w-3xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-text-secondary">
+            <p className="text-xs font-semibold uppercase tracking-wider text-text-secondary">
               Personal orchestration
             </p>
             <h2 className="mt-3 text-2xl font-semibold tracking-tight text-text-main sm:text-3xl">
-              Your AI agent works better with tighter controls and clearer
-              visibility.
+              Your AI agent works better with tighter controls and clearer visibility.
             </h2>
             <p className="mt-3 text-base leading-7 text-text-secondary">
-               Connect your wallet and let your AI agent buy, sell, and
-               manage marketplace services with rules you can actually review.
+              Connect your wallet and let your AI agent buy, sell, and manage
+              marketplace services with rules you can actually review.
             </p>
           </div>
           <div className="mt-6 flex flex-wrap items-center gap-3">
             <Link
               href="/marketplace"
-              className="focus-ring inline-flex rounded-full border border-brand bg-brand px-5 py-3 text-sm font-semibold text-white hover:bg-brand-hover"
+              className="focus-ring inline-flex rounded-lg border border-brand bg-brand px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-hover"
             >
               Browse Services
             </Link>
             <Link
               href="/dashboard"
-              className="focus-ring inline-flex rounded-full border border-border-main bg-white/80 px-5 py-3 text-sm font-semibold text-text-main transition-colors hover:bg-slate-50 dark:bg-slate-800/80 dark:text-slate-100 dark:hover:bg-slate-700"
+              className="focus-ring inline-flex rounded-lg border border-border-main bg-main-bg px-5 py-2.5 text-sm font-semibold text-text-main transition-colors hover:bg-slate-100"
             >
               Agent Dashboard
             </Link>
@@ -63,50 +62,28 @@ export default function AppPage() {
           ].map((item, index) => (
             <article
               key={item.title}
-              className="glass-panel rounded-[1.25rem] p-5"
+              className="rounded-2xl border border-border-main bg-surface p-6"
             >
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-[0.875rem] bg-brand-light text-brand">
-                <svg
-                  className="h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d={item.icon}
-                  />
+              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-brand-light text-brand">
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon} />
                   {index === 1 && (
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                   )}
                 </svg>
               </div>
-              <h3 className="text-lg font-semibold text-text-main">
-                {item.title}
-              </h3>
-              <p className="mt-2 text-sm leading-6 text-text-secondary">
-                {item.text}
-              </p>
+              <h3 className="text-base font-semibold text-text-main">{item.title}</h3>
+              <p className="mt-2 text-sm leading-6 text-text-secondary">{item.text}</p>
             </article>
           ))}
         </section>
 
         {isConnected && user && (
-          <section className="glass-panel rounded-[1.25rem] border border-emerald-200/70 p-6 dark:border-emerald-900/70">
-            <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-300">
-              Wallet connected: {user.walletAddress.slice(0, 10)}...
-              {user.walletAddress.slice(-8)}
+          <section className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
+            <p className="text-sm font-semibold text-emerald-800">
+              Wallet connected: {user.walletAddress.slice(0, 10)}...{user.walletAddress.slice(-8)}
             </p>
-            <p className="mt-1 text-sm text-emerald-700 dark:text-emerald-400">
-              Your AI agent is ready to work.
-            </p>
+            <p className="mt-1 text-sm text-emerald-700">Your AI agent is ready to work.</p>
           </section>
         )}
       </main>
