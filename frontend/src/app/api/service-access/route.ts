@@ -59,7 +59,7 @@ export async function POST(req: Request) {
       if (access) granted.push(access);
     }
 
-    return NextResponse.json({ granted: granted.length, total: FREE_LISTING_IDS.length });
+    return NextResponse.json({ granted: granted.length, total: FREE_LISTING_IDS.length, accesses: granted });
   } catch {
     return NextResponse.json({ error: 'Failed to grant free agents' }, { status: 500 });
   }
