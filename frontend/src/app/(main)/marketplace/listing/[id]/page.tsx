@@ -68,7 +68,7 @@ export default function ListingPage() {
     <div className="page-shell min-h-screen">
       <Header />
       <main className="mx-auto max-w-4xl px-6 pb-16 pt-6 sm:px-8">
-        <Link href="/marketplace" className="focus-ring mb-6 inline-flex items-center gap-1.5 rounded-full border border-border-main bg-white/60 px-3.5 py-1.5 text-xs font-medium text-text-secondary/80 transition-colors hover:bg-white hover:text-text-main dark:bg-slate-900/50 dark:hover:bg-slate-800/80">
+        <Link href="/marketplace" className="focus-ring mb-6 inline-flex items-center gap-1.5 rounded-full border border-border-main bg-white/80 px-3.5 py-1.5 text-xs font-medium text-text-secondary/70 transition-colors hover:bg-white hover:text-text-main">
           <span>←</span>
           <span>Back to Marketplace</span>
         </Link>

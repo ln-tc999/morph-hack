@@ -40,8 +40,14 @@ export function MorphPayment({ listing, sellerAgentId, buyerAgentId }: Props) {
   const { writeContract: writeApprove, data: approveHash } = useWriteContract();
   const { writeContract: writeDeposit, data: depositHash } = useWriteContract();
 
-  const { isLoading: isApproving, isSuccess: isApproved } = useWaitForTransactionReceipt({ hash: approveHash });
-  const { isLoading: isDepositing, isSuccess: isDeposited } = useWaitForTransactionReceipt({ hash: depositHash });
+  const { isLoading: isApproving, isSuccess: isApproved } = useWaitForTransactionReceipt({
+    hash: approveHash,
+    query: { enabled: !!approveHash },
+  });
+  const { isLoading: isDepositing, isSuccess: isDeposited } = useWaitForTransactionReceipt({
+    hash: depositHash,
+    query: { enabled: !!depositHash },
+  });
 
   const needsApproval = allowance !== undefined && allowance < amountWei;
 
