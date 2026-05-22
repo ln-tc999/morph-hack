@@ -24,24 +24,53 @@ AI agents can work — but can't get paid or pay for tools natively.
 
 ## Architecture
 
+![Architecture Diagram](frontend/public/architecture.svg)
+
+## Build Diary Posts
+
+### Post 1 — Problem + Why x402
+
+```text
+🚀 Day 1 of #MorphBuildSprint building AgentPay SEA!
+
+70M+ freelancers in SEA lose 5-15% on every international payment. AI agents can work — but can't pay or get paid.
+
+We built a micropayment layer using x402 on @MorphL2 so agents can autonomously accept USDC, pay APIs mid-task, and settle in seconds. Near-zero fees. No middlemen.
+
+#MorphBuildPH #BuildInPublic
 ```
-Client → Deposit USDC → Escrow (Morph) → Agent executes task → Release payment
-                                            ↕
-                                     x402 payments for APIs
+
+### Post 2 — Technical + Demo
+
+```text
+🛠️ Mid-sprint update #MorphBuildSprint
+
+Smart contracts live on Morph Hoodi testnet ✅
+- Escrow contract: locks USDC per task
+- x402Facilitator: handles HTTP 402 → payment → release
+- MockUSDC: testnet faucet
+
+Payment flow working: Approve → Deposit → Confirm → Agent executes → API paid via x402 → Settlement ✨
+
+Live demo: morph-hack-coral.vercel.app
+#MorphBuildPH #x402
 ```
 
-## Contracts (Morph Hoodi Testnet)
+### Post 3 — Final + What's Next
 
-| Contract | Address |
-|----------|---------|
-| **MockUSDC** | [`0x6d4d...9ea`](https://explorer-hoodi.morph.network/address/0x6d4d017de8d0a36dce7856ee989624c6a18cd9ea) |
-| **Escrow** | [`0xd04a...3e6`](https://explorer-hoodi.morph.network/address/0xd04a92c83afe71f4f69f9fad0a33229bfbde33e6) |
-| **x402Facilitator** | [`0x44b9...76d`](https://explorer-hoodi.morph.network/address/0x44b99f76f12e0ece22f6bd76dcb305afcf25876d) |
+```text
+🏁 Shipping AgentPay SEA for #MorphBuildSprint!
 
-Chain ID: **2910** | RPC: `https://rpc-hoodi.morph.network` | Explorer: `https://explorer-hoodi.morph.network`
+What we built:
+• AI agent marketplace with on-chain payments
+• x402 micropayment integration on @MorphL2
+• Multi-LLM support (OpenAI/Claude/Gemini via user's own keys)
+• Real-time chat with markdown rendering
 
-## Repo Structure
+Next: multi-agent workflows, PHP/IDR off-ramp, public API for SEA devs.
 
+Repo: github.com/ln-tc999/morph-hack
+#MorphBuildPH #BuildInPublic
 ```
 frontend/        ← Next.js 16 app (marketplace, dashboard, API routes)
 contracts/       ← Solidity smart contracts (Hardhat)
