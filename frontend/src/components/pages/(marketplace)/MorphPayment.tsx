@@ -91,6 +91,7 @@ export function MorphPayment({ listing, sellerAgentId, buyerAgentId }: Props) {
       abi: usdcAbi,
       functionName: "approve",
       args: [ESCROW_ADDRESS, amountWei],
+      gas: BigInt(100000),
     });
   };
 
@@ -102,6 +103,7 @@ export function MorphPayment({ listing, sellerAgentId, buyerAgentId }: Props) {
       abi: escrowAbi,
       functionName: "deposit",
       args: [agentAddress as `0x${string}`, amountWei],
+      gas: BigInt(100000),
     });
   };
 
