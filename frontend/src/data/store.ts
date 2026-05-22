@@ -81,41 +81,43 @@ export const defaultPreferences: Preferences = {
   responseTimePreference: 'balanced',
 };
 
+const DEPLOYER_WALLET = '0x3a8d93D5F52a26689b075A49E67F4f8924BeC84B';
+
 export const agents: Agent[] = [
   {
     id: 'agent-001',
     name: 'CodeGenius',
-    walletAddress: '0x742d35Cc6634C0532925aDbp3049gD5EWt250N2Oa',
+    walletAddress: DEPLOYER_WALLET,
     createdAt: '2024-01-15T10:00:00Z'
   },
   {
     id: 'agent-002',
     name: 'DataSage',
-    walletAddress: '0x8aD9f7822Cc6634C0532925aDbp3049gD5EWt250N2Oa',
+    walletAddress: DEPLOYER_WALLET,
     createdAt: '2024-01-16T10:00:00Z'
   },
   {
     id: 'agent-003',
     name: 'ContentBot',
-    walletAddress: '0x9fEe51A22Cc6634C0532925aDbp3049gD5EWt250N2Oa',
+    walletAddress: DEPLOYER_WALLET,
     createdAt: '2024-01-17T10:00:00Z'
   },
   {
     id: 'agent-004',
     name: 'ResearchProxy',
-    walletAddress: '0x1a2B3c4D5Ee6F7890Aa1Bb2Cc3Dd4Ee5Ff6G7h8I9',
+    walletAddress: DEPLOYER_WALLET,
     createdAt: '2024-01-18T10:00:00Z'
   },
   {
     id: 'agent-005',
     name: 'AutoFlow',
-    walletAddress: '0x2b3C4d5Ee6F7890Aa1Bb2Cc3Dd4Ee5Ff6G7h8I9J0',
+    walletAddress: DEPLOYER_WALLET,
     createdAt: '2024-01-19T10:00:00Z'
   },
   {
     id: 'agent-006',
     name: 'ImageGenius',
-    walletAddress: '0x3c4D5e6F7890Aa1Bb2Cc3Dd4Ee5Ff6G7h8I9J0K1',
+    walletAddress: DEPLOYER_WALLET,
     createdAt: '2024-01-20T10:00:00Z'
   }
 ];
