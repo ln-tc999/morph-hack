@@ -44,25 +44,34 @@ export default function AgentsPage() {
       const res = await fetch(`/api/service-access?userId=${userId}`);
       const data = await res.json();
       const accesses = data.accesses || [];
-      for (const a of accesses) {
-        addOwnedAgent({
-          id: a.id,
-          purchaseId: a.purchaseId,
-          listingId: a.listingId,
-          sellerAgentId: a.sellerAgentId,
-          accessToken: a.accessToken,
-          status: a.status,
-          expiresAt: a.expiresAt,
-          accessTokenCreated: a.accessTokenCreated,
-        });
+      if (accesses.length > 0) {
+        for (const a of accesses) {
+          addOwnedAgent({
+            id: a.id,
+            purchaseId: a.purchaseId,
+            listingId: a.listingId,
+            sellerAgentId: a.sellerAgentId,
+            accessToken: a.accessToken,
+            status: a.status,
+            expiresAt: a.expiresAt,
+            accessTokenCreated: a.accessTokenCreated,
+          });
+        }
+        buildAgentCards(accesses);
+        return;
       }
-      buildAgentCards(accesses);
     } catch {
-      if (ownedAgents.length > 0) {
-        buildAgentCardsFromZustand(ownedAgents);
-      } else {
-        setAgents([]);
-      }
+      /* server unavailable – fall through to Zustand */
+    }
+    if (ownedAgents.length > 0) {
+      buildAgentCardsFromZustand(ownedAgents);
+      fetch('/api/service-access/hydrate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ accesses: ownedAgents }),
+      }).catch(() => {});
+    } else {
+      setAgents([]);
     }
   };
 
