@@ -16,7 +16,7 @@ import {
 } from "@/data/store";
 
 export default function DashboardPage() {
-  const { user, isConnected, preferences } = useUserStore();
+  const { user, isConnected, preferences, ownedAgents } = useUserStore();
   const [activeTab, setActiveTab] = useState<"purchases" | "listings" | "subscriptions">("purchases");
   const [myListings, setMyListings] = useState<Listing[]>([]);
   const [myPurchases, setMyPurchases] = useState<Purchase[]>([]);
@@ -35,23 +35,44 @@ export default function DashboardPage() {
         setMyListings((listingsData.listings || []).filter((l: Listing) => l.userId === user!.id));
 
         const accessData = await purchasesRes.json();
-        const purchases: Purchase[] = (accessData.accesses || []).map((a: { purchaseId: string; listingId: string; sellerAgentId: string; buyerUserId: string; status: string; createdAt: string }) => ({
-          id: a.purchaseId || a.listingId,
-          listingId: a.listingId,
-          sellerAgentId: a.sellerAgentId,
-          buyerUserId: a.buyerUserId,
-          amount: "0",
-          status: a.status === "ACTIVE" ? "CONFIRMED" as const : "PENDING" as const,
-          autoPurchased: false,
-          createdAt: a.createdAt || new Date().toISOString(),
-        }));
-        setMyPurchases(purchases);
+        const apiAccesses: Array<{ purchaseId: string; listingId: string; sellerAgentId: string; buyerUserId: string; status: string; createdAt: string }> = accessData.accesses || [];
+
+        if (apiAccesses.length > 0) {
+          const purchases: Purchase[] = apiAccesses.map((a) => ({
+            id: a.purchaseId || a.listingId,
+            listingId: a.listingId,
+            sellerAgentId: a.sellerAgentId,
+            buyerUserId: a.buyerUserId,
+            amount: "0",
+            status: a.status === "ACTIVE" ? "CONFIRMED" as const : "PENDING" as const,
+            autoPurchased: false,
+            createdAt: a.createdAt || new Date().toISOString(),
+          }));
+          setMyPurchases(purchases);
+        } else if (ownedAgents.length > 0) {
+          const purchases: Purchase[] = ownedAgents.map((a) => ({
+            id: a.purchaseId || a.listingId,
+            listingId: a.listingId,
+            sellerAgentId: a.sellerAgentId,
+            buyerUserId: user.id,
+            amount: "0",
+            status: "CONFIRMED" as const,
+            autoPurchased: false,
+            createdAt: a.accessTokenCreated,
+          }));
+          setMyPurchases(purchases);
+          fetch('/api/service-access/hydrate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ accesses: ownedAgents }),
+          }).catch(() => {});
+        }
 
         const subsData = await subsRes.json();
         setMySubscriptions(subsData.subscriptions || []);
       } catch {}
     })();
-  }, [user, isConnected]);
+  }, [user, isConnected, ownedAgents]);
 
   const totalTrackedVolume = [...myPurchases, ...mySubscriptions].reduce(
     (sum, item) => sum + Number(item.amount || 0), 0,
