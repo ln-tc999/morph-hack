@@ -28,11 +28,6 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* Global: subtle rounded corners */
-*, *::before, *::after {
-  border-radius: 4px !important;
-}
-
 ::selection {
   background: #dbeafe;
 }
