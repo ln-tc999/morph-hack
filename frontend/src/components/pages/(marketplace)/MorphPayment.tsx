@@ -52,12 +52,14 @@ export function MorphPayment({ listing, sellerAgentId, buyerAgentId }: Props) {
 
   useEffect(() => {
     if (isApproveError && approveError) {
+      console.error("Approve error:", approveError);
       toast.error(String(approveError?.message || "Approval rejected"));
       if (step === "approving") setStep("approve");
     }
   }, [isApproveError, approveError]);
   useEffect(() => {
     if (isDepositError && depositError) {
+      console.error("Deposit error:", depositError);
       toast.error(String(depositError?.message || "Deposit rejected"));
       if (step === "depositing") setStep("deposit");
     }
