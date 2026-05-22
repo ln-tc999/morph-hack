@@ -45,7 +45,7 @@ export function Header() {
                 key={item.href}
                 href={item.href}
                 onClick={() => setPendingPath(item.href)}
-                className={`focus-ring cursor-pointer px-3 py-1.5 text-sm font-medium transition-colors ${
+                className={`focus-ring cursor-pointer rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
                   isActive
                     ? "bg-brand-light text-brand"
                     : "text-text-secondary hover:text-text-main"
