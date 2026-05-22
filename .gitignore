@@ -43,3 +43,5 @@ broadcast/
 artifacts/
 cache_hardhat/
 typechain-types/
+
+frontend-reference
