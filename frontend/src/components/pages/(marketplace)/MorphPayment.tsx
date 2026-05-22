@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import { toast } from "sonner";
 import { useUserStore } from "@/store/user";
 import { usdcAbi, USDC_ADDRESS } from "@/lib/contracts/usdc";
 import { escrowAbi, ESCROW_ADDRESS } from "@/lib/contracts/escrow";
@@ -37,8 +38,8 @@ export function MorphPayment({ listing, sellerAgentId, buyerAgentId }: Props) {
     query: { enabled: !!address },
   });
 
-  const { writeContract: writeApprove, data: approveHash } = useWriteContract();
-  const { writeContract: writeDeposit, data: depositHash } = useWriteContract();
+  const { writeContract: writeApprove, data: approveHash, isError: isApproveError, error: approveError } = useWriteContract();
+  const { writeContract: writeDeposit, data: depositHash, isError: isDepositError, error: depositError } = useWriteContract();
 
   useWaitForTransactionReceipt({
     hash: approveHash,
@@ -48,6 +49,19 @@ export function MorphPayment({ listing, sellerAgentId, buyerAgentId }: Props) {
     hash: depositHash,
     query: { enabled: !!depositHash },
   });
+
+  useEffect(() => {
+    if (isApproveError && approveError) {
+      toast.error(String(approveError?.message || "Approval rejected"));
+      if (step === "approving") setStep("approve");
+    }
+  }, [isApproveError, approveError]);
+  useEffect(() => {
+    if (isDepositError && depositError) {
+      toast.error(String(depositError?.message || "Deposit rejected"));
+      if (step === "depositing") setStep("deposit");
+    }
+  }, [isDepositError, depositError]);
 
   const needsApproval = allowance !== undefined && allowance < amountWei;
 
@@ -86,24 +100,24 @@ export function MorphPayment({ listing, sellerAgentId, buyerAgentId }: Props) {
 
   const handleApprove = () => {
     setStep("approving");
+    toast.info("Open Rabby Wallet to confirm the approval");
     writeApprove({
       address: USDC_ADDRESS,
       abi: usdcAbi,
       functionName: "approve",
       args: [ESCROW_ADDRESS, amountWei],
-      gas: BigInt(100000),
     });
   };
 
   const handleDeposit = () => {
     if (!agentAddress) return;
     setStep("depositing");
+    toast.info("Open Rabby Wallet to confirm the deposit");
     writeDeposit({
       address: ESCROW_ADDRESS,
       abi: escrowAbi,
       functionName: "deposit",
       args: [agentAddress as `0x${string}`, amountWei],
-      gas: BigInt(100000),
     });
   };
 
