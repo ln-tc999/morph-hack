@@ -363,7 +363,7 @@ export default function AgentsPage() {
                         key={chip}
                         type="button"
                         onClick={() => setInput(chip)}
-                        className="focus-ring cursor-pointer rounded-full border border-border-main bg-white/80 px-3 py-2 text-xs text-text-secondary hover:bg-white dark:bg-slate-900/70"
+                        className="focus-ring cursor-pointer rounded-full border border-border-main bg-main-bg px-3 py-2 text-xs text-text-secondary hover:bg-surface"
                       >
                         {chip}
                       </button>
