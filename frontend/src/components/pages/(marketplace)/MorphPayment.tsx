@@ -40,11 +40,11 @@ export function MorphPayment({ listing, sellerAgentId, buyerAgentId }: Props) {
   const { writeContract: writeApprove, data: approveHash } = useWriteContract();
   const { writeContract: writeDeposit, data: depositHash } = useWriteContract();
 
-  const { isLoading: isApproving, isSuccess: isApproved } = useWaitForTransactionReceipt({
+  useWaitForTransactionReceipt({
     hash: approveHash,
     query: { enabled: !!approveHash },
   });
-  const { isLoading: isDepositing, isSuccess: isDeposited } = useWaitForTransactionReceipt({
+  useWaitForTransactionReceipt({
     hash: depositHash,
     query: { enabled: !!depositHash },
   });
@@ -266,19 +266,19 @@ export function MorphPayment({ listing, sellerAgentId, buyerAgentId }: Props) {
           </button>
         )}
 
-        {step === "approving" && (
+        {step === "approving" && !approveHash && (
           <div className="flex items-center justify-center gap-2 rounded-full bg-brand/10 py-4">
             <svg className="h-5 w-5 animate-spin text-brand" viewBox="0 0 24 24" fill="none">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
             </svg>
-            <span className="text-sm font-medium text-brand">Approving USDC...</span>
+            <span className="text-sm font-medium text-brand">Confirm in wallet...</span>
           </div>
         )}
 
-        {isApproved && step === "approving" && (
+        {approveHash && step === "approving" && (
           <div className="text-center">
-            <p className="text-sm text-emerald-600">USDC approved!</p>
+            <p className="text-sm text-emerald-600">Approved!</p>
             <button
               type="button"
               onClick={() => setStep("deposit")}
