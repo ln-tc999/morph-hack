@@ -1,8 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { Header } from "@/components/pages/(app)";
 import { useUserStore } from "@/store/user";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import {
   AgentMessage,
   getAgentModel,
@@ -241,28 +244,40 @@ export default function AgentsPage() {
     }
   };
 
-  const formatMessage = (content: string) =>
-    content.split("```").map((part, index) => {
-      if (index % 2 === 1) {
-        const firstNewline = part.indexOf("\n");
-        const lang = firstNewline > -1 ? part.slice(0, firstNewline) : "";
-        const code = firstNewline > -1 ? part.slice(firstNewline + 1) : part;
-        return (
-          <pre key={index} className="my-2 overflow-x-auto rounded-[0.875rem] bg-slate-950 p-3 text-xs text-slate-100">
-            {lang && <div className="mb-1 text-xs text-slate-400">{lang}</div>}
-            <code>{code}</code>
-          </pre>
-        );
-      }
-
-      const lines = part.split("\n");
-      return lines.map((line, lineIndex) => (
-        <span key={`${index}-${lineIndex}`}>
-          {line}
-          {lineIndex < lines.length - 1 && <br />}
-        </span>
-      ));
-    });
+  const formatMessage = (content: string) => (
+    <ReactMarkdown
+      remarkPlugins={[remarkGfm]}
+      components={{
+        code({ className, children, ...props }) {
+          const isInline = !className;
+          if (isInline) {
+            return <code className="rounded bg-slate-100 px-1.5 py-0.5 text-sm text-slate-800" {...props}>{children}</code>;
+          }
+          return (
+            <pre className="my-2 overflow-x-auto rounded-[0.875rem] bg-slate-950 p-3 text-xs text-slate-100">
+              <code className={className} {...props}>{children}</code>
+            </pre>
+          );
+        },
+        a({ href, children }) {
+          return <a href={href} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">{children}</a>;
+        },
+        ul({ children }) {
+          return <ul className="list-disc space-y-1 pl-5">{children}</ul>;
+        },
+        ol({ children }) {
+          return <ol className="list-decimal space-y-1 pl-5">{children}</ol>;
+        },
+        h1({ children }) { return <h1 className="mb-2 mt-4 text-lg font-bold">{children}</h1>; },
+        h2({ children }) { return <h2 className="mb-2 mt-3 text-base font-bold">{children}</h2>; },
+        h3({ children }) { return <h3 className="mb-1 mt-2 text-sm font-semibold">{children}</h3>; },
+        strong({ children }) { return <strong className="font-semibold">{children}</strong>; },
+        p({ children }) { return <p className="mb-2 last:mb-0">{children}</p>; },
+      }}
+    >
+      {content}
+    </ReactMarkdown>
+  );
 
   if (!isConnected) {
     return (

@@ -120,6 +120,9 @@ export default function DashboardPage() {
           <ActivityLogPanel maxItems={15} showFilters={true} />
         </div>
 
+        {/* API Keys */}
+        <ApiKeyPanel />
+
         {/* Records table */}
         <section className="overflow-hidden rounded-2xl border border-border-main bg-surface">
           <div className="flex flex-col gap-4 border-b border-border-main px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
@@ -262,6 +265,51 @@ export default function DashboardPage() {
         </section>
       </main>
     </div>
+  );
+}
+
+function ApiKeyPanel() {
+  const { apiKeys, setApiKey } = useUserStore();
+  const [saved, setSaved] = useState(false);
+
+  const handleSave = (provider: "openai" | "claude" | "gemini") => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setApiKey(provider, e.target.value);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  const providers = [
+    { key: "openai" as const, label: "OpenAI", placeholder: "sk-..." },
+    { key: "claude" as const, label: "Anthropic Claude", placeholder: "sk-ant-..." },
+    { key: "gemini" as const, label: "Google Gemini", placeholder: "AIza..." },
+  ];
+
+  return (
+    <section className="rounded-2xl border border-border-main bg-surface p-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-base font-semibold text-text-main">API Keys</h2>
+          <p className="mt-0.5 text-sm text-text-secondary">
+            Set your own API keys to use with your agents. Default: NVIDIA.
+          </p>
+        </div>
+        {saved && <span className="text-xs text-emerald-600">Saved</span>}
+      </div>
+      <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
+        {providers.map((p) => (
+          <div key={p.key}>
+            <label className="mb-1 block text-xs font-medium text-text-secondary">{p.label}</label>
+            <input
+              type="password"
+              value={apiKeys[p.key]}
+              onChange={handleSave(p.key)}
+              placeholder={p.placeholder}
+              className="focus-ring field-shell w-full rounded-lg px-3 py-2 text-sm text-text-main"
+            />
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
 

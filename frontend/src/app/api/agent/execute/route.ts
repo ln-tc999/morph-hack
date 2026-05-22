@@ -1,12 +1,19 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { getServiceAccessByToken, getAgentSystemPrompt, addMessageToTask, getAgentTaskById, getAgentTasksByUser, createAgentTask, getListingById, getAgentModel } from '@/data/store';
 
 const NVIDIA_API_BASE = 'https://integrate.api.nvidia.com/v1';
 const NVIDIA_API_KEY = process.env.NVIDIA_API_KEY;
 
+const PROVIDERS: Record<string, { base: string; model: string }> = {
+  nvidia: { base: 'https://integrate.api.nvidia.com/v1', model: '' },
+  openai: { base: 'https://api.openai.com/v1', model: 'gpt-4o-mini' },
+  claude: { base: 'https://api.anthropic.com/v1', model: 'claude-3-5-haiku-latest' },
+  gemini: { base: 'https://generativelanguage.googleapis.com/v1beta', model: 'gemini-2.0-flash' },
+};
+
 export async function POST(req: NextRequest) {
   try {
-    const { accessToken, message, taskId, listingId, userId } = await req.json();
+    const { accessToken, message, taskId, listingId, userId, apiProvider, apiKey } = await req.json();
 
     if (!accessToken || !message) {
       return new Response(JSON.stringify({ error: 'Missing accessToken or message' }), { status: 400 });
@@ -22,6 +29,9 @@ export async function POST(req: NextRequest) {
     const systemPrompt = getAgentSystemPrompt(category);
     const model = getAgentModel(category);
 
+    const provider = apiProvider || 'nvidia';
+    const providerKey = apiKey || (provider === 'nvidia' ? NVIDIA_API_KEY : null);
+
     let task = taskId ? getAgentTaskById(taskId) : undefined;
 
     if (!task) {
@@ -35,35 +45,69 @@ export async function POST(req: NextRequest) {
       content: m.content
     }));
 
-    const messages = [
-      { role: 'system', content: systemPrompt },
-      ...conversationHistory.slice(-20)
-    ];
-
-    if (!NVIDIA_API_KEY) {
-      const demoResponse = `[Demo Mode - No NVIDIA API Key]\n\nYou asked: "${message}"\n\nThis is a demo response from the ${listing?.title || 'agent'}. In production, this would use NVIDIA's LLM to generate a real response.\n\nTo enable real AI responses, set the NVIDIA_API_KEY environment variable.`;
+    if (!providerKey) {
+      const demoResponse = `[Demo Mode - No API Key]\n\nYou asked: "${message}"\n\nThis is a demo response. To enable real AI responses, set an API key in Dashboard → API Keys or set the NVIDIA_API_KEY environment variable.`;
       addMessageToTask(task.id, { role: 'assistant', content: demoResponse, timestamp: new Date().toISOString() });
       return new Response(JSON.stringify({ response: demoResponse, taskId: task.id }));
     }
 
-    const response = await fetch(`${NVIDIA_API_BASE}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${NVIDIA_API_KEY}`,
+    const providerCfg = PROVIDERS[provider];
+    if (!providerCfg) {
+      return new Response(JSON.stringify({ error: `Unknown provider: ${provider}` }), { status: 400 });
+    }
+
+    let apiUrl: string;
+    let headers: Record<string, string>;
+    let body: string;
+
+    if (provider === 'claude') {
+      apiUrl = `${providerCfg.base}/messages`;
+      headers = {
+        'x-api-key': providerKey,
+        'anthropic-version': '2023-06-01',
         'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model,
-        messages,
+      };
+      body = JSON.stringify({
+        model: providerCfg.model,
+        max_tokens: 2048,
+        temperature: 0.7,
+        system: systemPrompt,
+        messages: conversationHistory.slice(-20).map(m => ({ role: m.role, content: m.content })),
+        stream: true,
+      });
+    } else if (provider === 'gemini') {
+      apiUrl = `${providerCfg.base}/models/${providerCfg.model}:streamGenerateContent?key=${providerKey}`;
+      headers = { 'Content-Type': 'application/json' };
+      body = JSON.stringify({
+        contents: [
+          { role: 'user', parts: [{ text: systemPrompt }] },
+          ...conversationHistory.slice(-20).map(m => ({ role: m.role, parts: [{ text: m.content }] })),
+        ],
+        generationConfig: { maxOutputTokens: 2048, temperature: 0.7 },
+      });
+    } else {
+      apiUrl = `${providerCfg.base || NVIDIA_API_BASE}/chat/completions`;
+      headers = {
+        'Authorization': `Bearer ${providerKey}`,
+        'Content-Type': 'application/json',
+      };
+      body = JSON.stringify({
+        model: model || providerCfg.model || 'meta/llama-3.3-70b-instruct',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          ...conversationHistory.slice(-20)
+        ],
         max_tokens: 2048,
         temperature: 0.7,
         stream: true,
-      })
-    });
+      });
+    }
+
+    const response = await fetch(apiUrl, { method: 'POST', headers, body });
 
     if (!response.ok) {
       const err = await response.text();
-      addMessageToTask(task.id, { role: 'assistant', content: `Error: Failed to get AI response. Status: ${response.status}`, timestamp: new Date().toISOString() });
+      addMessageToTask(task.id, { role: 'assistant', content: `Error: ${provider} API returned ${response.status}`, timestamp: new Date().toISOString() });
       return new Response(JSON.stringify({ error: 'AI service unavailable', details: err }), { status: 502 });
     }
 
@@ -147,5 +191,3 @@ export async function GET(req: Request) {
 
   return NextResponse.json({ error: 'Missing userId or taskId' }, { status: 400 });
 }
-
-import { NextResponse } from 'next/server';
